@@ -6,7 +6,7 @@ setuptools.setup(
     version="0.0.1",
     author="Luke Logan",
     author_email="lukemartinlogan@gmail.com",
-    description="An I/O buffering library",
+    description="Vizualizer for an I/O buffering library",
     url="https://github.com/HDFGroup/hermes.git",
     classifiers = [
         "Programming Language :: Python",

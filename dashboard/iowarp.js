@@ -26,13 +26,12 @@ async function updateTargetDisplay() {
     const box = document.createElement('div');
     box.className = 'target-box';
 
-    const usedSpace = target.capacity - target.free;
-    const usagePercent = ((usedSpace / target.capacity) * 100).toFixed(1);
+    const usagePercent = ((target.rem_cap / target.max_cap) * 100).toFixed(1);
 
     box.innerHTML = `
             <h3>${target.name}</h3>
-            <p>Free Space: ${formatBytes(target.free)}</p>
-            <p>Capacity: ${formatBytes(target.capacity)}</p>
+            <p>Free Space: ${formatBytes(target.max_cap - target.rem_cap)}</p>
+            <p>Capacity: ${formatBytes(target.max_cap)}</p>
             <p>Usage: ${usagePercent}%</p>
         `;
 

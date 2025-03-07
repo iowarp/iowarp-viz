@@ -12,6 +12,10 @@ def periodic_collect():
         time.sleep(5)
 
 app = Flask(__name__)
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 @app.route('/api/tags', methods=['GET'])
 def get_tags():

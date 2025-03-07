@@ -1,6 +1,3 @@
-
-from py_hermes import Hermes, TRANSPARENT_HERMES
-
 class MetadataSnapshot:
     """
     Three tables will be collected:
@@ -10,43 +7,41 @@ class MetadataSnapshot:
     3. Tag Info
     """
     def __init__(self):
-        TRANSPARENT_HERMES()
-        self.hermes = Hermes()
         self.blob_info = []
         self.target_info = []
         self.tag_info = []
 
-    @staticmethod
-    def unique(id):
-        return f'{id.node_id}.{id.unique}'
-        
     def collect(self):
-        mdm = self.hermes.CollectMetadataSnapshot()
+        self.blob_info = []
+        self.target_info = []
+        self.tag_info = []
+
         tag_to_blob = {}
         tid_to_tgt = {}
-        for target in mdm.target_info:
+        for i in range(3):
             target_info = {
                 'name': None,
-                'id':  self.unique(target.tgt_id),
-                'node_id': int(target.node_id),
-                'rem_cap': target.rem_cap,
-                'max_cap': target.max_cap,
-                'bandwidth': target.bandwidth,
-                'latency': target.latency,
-                'score': target.score,
+                'id':  f'{i}.{i}',
+                'node_id': i,
+                'rem_cap': 100 * i,
+                'max_cap': 1000 * i,
+                'bandwidth': 5000 * i / 3,
+                'latency': 50 / i,
+                'score': 1 / i,
             }
             self.target_info.append(target_info)
             tid_to_tgt[target_info['id']] = target_info
         self.target_info.sort(reverse=True, key=lambda x: x['bandwidth'])
         for i, target in enumerate(self.target_info):
             target['name'] = f'Tier {i}'
-        for blob in mdm.blob_info:
+        
+        for i in range(100):
             blob_info = {
-                'name': str(blob.get_name()),
-                'id': self.unique(blob.blob_id),
-                'mdm_node': int(blob.blob_id.node_id),
-                'tag_id': self.unique(blob.tag_id),
-                'score': float(blob.score),
+                'name': f'Blob {i}',
+                'id': f'{i}.{i + 100}',
+                'mdm_node': int(i),
+                'tag_id': f'{i}.{i + 500}',
+                'score': i / 100,
                 'access_frequency': 0,
                 'buffer_info': []
             }
@@ -62,11 +57,13 @@ class MetadataSnapshot:
             if blob_info['tag_id'] not in tag_to_blob:
                 tag_to_blob[blob_info['tag_id']] = []
             tag_to_blob[blob_info['tag_id']].append(blob_info['id'])
-        for tag in mdm.bkt_info:
+
+        
+        for i in range(100):
             tag_info = {
-                'id': self.unique(tag.tag_id),
-                'mdm_node': int(tag.tag_id.node_id),
-                'name': str(tag.get_name()),
+                'id': f'{i}.{i + 500}',
+                'mdm_node': int(i),
+                'name': f'Tag {i}',
                 # 'blobs': [self.unique(blob.blob_id) for blob in tag.blobs]
                 'blobs': []
             }

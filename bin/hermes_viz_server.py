@@ -1,4 +1,4 @@
-from mock_mdm import MetadataSnapshot
+from py_hermes_mdm.mock_mdm import MetadataSnapshot
 from flask import Flask, jsonify
 import threading
 import time
@@ -28,5 +28,4 @@ def get_blobs():
 if __name__ == '__main__':
     collect_thread = threading.Thread(target=periodic_collect, daemon=True)
     collect_thread.start()
-    app.run(debug=True)
-    
+    app.run(debug=True, port=4280)

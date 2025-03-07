@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name="hermes",
+    name="py_hermes_mdm",
     packages=setuptools.find_packages(),
     version="0.0.1",
     author="Luke Logan",

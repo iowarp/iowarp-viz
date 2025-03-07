@@ -18,7 +18,7 @@ class MetadataSnapshot:
 
         tag_to_blob = {}
         tid_to_tgt = {}
-        for i in range(3):
+        for i in range(1, 4):
             target_info = {
                 'name': None,
                 'id':  f'{i}.{i}',
@@ -35,7 +35,7 @@ class MetadataSnapshot:
         for i, target in enumerate(self.target_info):
             target['name'] = f'Tier {i}'
         
-        for i in range(100):
+        for i in range(1, 100):
             blob_info = {
                 'name': f'Blob {i}',
                 'id': f'{i}.{i + 100}',
@@ -45,11 +45,11 @@ class MetadataSnapshot:
                 'access_frequency': 0,
                 'buffer_info': []
             }
-            for buf in blob.buffers:
+            for buf in range(1):
                 buf_info = {
-                    'target_id': self.unique(buf.tid),
+                    'target_id': f'{i % 3 + 1}.{i % 3 + 1}',
                     'node_id': 0,
-                    'size': int(buf.t_size)
+                    'size': 10
                 }
                 buf_info['node_id'] = tid_to_tgt[buf_info['target_id']]['node_id']
                 blob_info['buffer_info'].append(buf_info)
@@ -59,7 +59,7 @@ class MetadataSnapshot:
             tag_to_blob[blob_info['tag_id']].append(blob_info['id'])
 
         
-        for i in range(100):
+        for i in range(1, 100):
             tag_info = {
                 'id': f'{i}.{i + 500}',
                 'mdm_node': int(i),

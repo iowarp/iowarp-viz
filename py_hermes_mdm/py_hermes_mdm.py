@@ -16,15 +16,10 @@ class MetadataSnapshot:
         self.target_info = []
         self.tag_info = []
 
-    @staticmethod
-    def unique(id):
-        return f'{id.node_id}.{id.unique}'
-        
-    def collect(self):
-        mdm = self.hermes.CollectMetadataSnapshot()
-        tag_to_blob = {}
-        tid_to_tgt = {}
-        for target in mdm.target_info:
+    def collect_target_md(self, filter, max_count):
+        targets = self.hermes.PollTargetMetadata(filter, max_count)
+        self.target_info = []
+        for target in targets:
             target_info = {
                 'name': None,
                 'id':  self.unique(target.tgt_id),
@@ -36,11 +31,15 @@ class MetadataSnapshot:
                 'score': target.score,
             }
             self.target_info.append(target_info)
-            tid_to_tgt[target_info['id']] = target_info
+            self.tid_to_tgt[target_info['id']] = target_info
         self.target_info.sort(reverse=True, key=lambda x: x['bandwidth'])
         for i, target in enumerate(self.target_info):
             target['name'] = f'Tier {i}'
-        for blob in mdm.blob_info:
+    
+    def collect_blob_md(self, filter, max_count):
+        blobs = self.hermes.PollBlobMetadata(filter, max_count)
+        self.blob_info = []
+        for blob in blobs:
             blob_info = {
                 'name': str(blob.get_name()),
                 'id': self.unique(blob.blob_id),
@@ -59,10 +58,13 @@ class MetadataSnapshot:
                 buf_info['node_id'] = tid_to_tgt[buf_info['target_id']]['node_id']
                 blob_info['buffer_info'].append(buf_info)
             self.blob_info.append(blob_info)
-            if blob_info['tag_id'] not in tag_to_blob:
-                tag_to_blob[blob_info['tag_id']] = []
-            tag_to_blob[blob_info['tag_id']].append(blob_info['id'])
-        for tag in mdm.bkt_info:
+            if blob_info['tag_id'] not in self.tag_to_blob:
+                self.tag_to_blob[blob_info['tag_id']] = []
+            self.tag_to_blob[blob_info['tag_id']].append(blob_info['id'])
+
+    def collect_tag_md(self, filter, max_count):
+        tags = self.hermes.PollTagMetadata(filter, max_count)
+        for tag in tags:
             tag_info = {
                 'id': self.unique(tag.tag_id),
                 'mdm_node': int(tag.tag_id.node_id),
@@ -70,10 +72,11 @@ class MetadataSnapshot:
                 # 'blobs': [self.unique(blob.blob_id) for blob in tag.blobs]
                 'blobs': []
             }
-            if tag_info['id'] in tag_to_blob:
-                tag_info['blobs'] = tag_to_blob[tag_info['id']]
+            if tag_info['id'] in self.tag_to_blob:
+                tag_info['blobs'] = self.tag_to_blob[tag_info['id']]
             self.tag_info.append(tag_info)
 
-# mdm = MetadataSnapshot()
-# mdm.collect()
-# print('Done')
+    @staticmethod
+    def unique(id):
+        return f'{id.node_id}.{id.unique}'
+        

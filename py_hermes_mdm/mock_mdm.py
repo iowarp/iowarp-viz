@@ -10,14 +10,11 @@ class MetadataSnapshot:
         self.blob_info = []
         self.target_info = []
         self.tag_info = []
+        self.tag_to_blob = {}
+        self.tid_to_tgt = {}
 
-    def collect(self):
-        self.blob_info = []
+    def collect_target_md(self, filter, max_count):
         self.target_info = []
-        self.tag_info = []
-
-        tag_to_blob = {}
-        tid_to_tgt = {}
         for i in range(1, 4):
             target_info = {
                 'name': None,
@@ -30,11 +27,12 @@ class MetadataSnapshot:
                 'score': 1 / i,
             }
             self.target_info.append(target_info)
-            tid_to_tgt[target_info['id']] = target_info
+            self.tid_to_tgt[target_info['id']] = target_info
         self.target_info.sort(reverse=True, key=lambda x: x['bandwidth'])
         for i, target in enumerate(self.target_info):
             target['name'] = f'Tier {i}'
-        
+    
+    def collect_blob_md(self, filter, max_count):
         for i in range(1, 100):
             blob_info = {
                 'name': f'Blob {i}',
@@ -51,14 +49,14 @@ class MetadataSnapshot:
                     'node_id': 0,
                     'size': 10
                 }
-                buf_info['node_id'] = tid_to_tgt[buf_info['target_id']]['node_id']
+                buf_info['node_id'] = self.tid_to_tgt[buf_info['target_id']]['node_id']
                 blob_info['buffer_info'].append(buf_info)
             self.blob_info.append(blob_info)
-            if blob_info['tag_id'] not in tag_to_blob:
-                tag_to_blob[blob_info['tag_id']] = []
-            tag_to_blob[blob_info['tag_id']].append(blob_info['id'])
+            if blob_info['tag_id'] not in self.tag_to_blob:
+                self.tag_to_blob[blob_info['tag_id']] = []
+            self.tag_to_blob[blob_info['tag_id']].append(blob_info['id'])
 
-        
+    def collect_tag_md(self, filter, max_count):
         for i in range(1, 100):
             tag_info = {
                 'id': f'{i}.{i + 500}',
@@ -67,8 +65,8 @@ class MetadataSnapshot:
                 # 'blobs': [self.unique(blob.blob_id) for blob in tag.blobs]
                 'blobs': []
             }
-            if tag_info['id'] in tag_to_blob:
-                tag_info['blobs'] = tag_to_blob[tag_info['id']]
+            if tag_info['id'] in self.tag_to_blob:
+                tag_info['blobs'] = self.tag_to_blob[tag_info['id']]
             self.tag_info.append(tag_info)
 
 # mdm = MetadataSnapshot()

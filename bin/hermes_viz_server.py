@@ -4,11 +4,12 @@ import threading
 import time
 
 mdm = MetadataSnapshot()
-mdm.collect()
 
 def periodic_collect():
     while True:
-        mdm.collect()
+        mdm.collect_target_md("", 100)
+        mdm.collect_blob_md("", 100)
+        mdm.collect_tag_md("", 100)
         time.sleep(5)
 
 app = Flask(__name__)

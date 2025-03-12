@@ -19,5 +19,10 @@ setuptools.setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: I/O",
     ],
-    long_description=""
+    long_description="",
+    install_requires=[
+        "pybind11",
+        "pytest",
+        "flask"
+    ]
 )

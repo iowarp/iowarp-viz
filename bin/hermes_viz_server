@@ -2,7 +2,7 @@
 """
 USAGE: hermes_viz_server.py <port> <period seconds>
 """
-from py_hermes_mdm.mock_mdm import MetadataSnapshot
+from py_hermes_mdm.py_hermes_mdm import MetadataSnapshot
 from flask import Flask, jsonify
 import threading
 import time
@@ -46,7 +46,7 @@ def get_html():
 def get_js():
     js_path = os.path.join(os.environ['HOME'], '.hermes_viz/iowarp.js')
     with open(js_path, 'r') as f:
-        return f.read()
+        return f.read().replace('##PORT##', str(port))
 
 if __name__ == '__main__':
     os.chdir(os.path.join(os.environ['HOME'], '.hermes_viz'))

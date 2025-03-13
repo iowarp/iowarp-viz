@@ -1,4 +1,4 @@
-const BACKEND_URL = 'http://localhost:4280';
+const BACKEND_URL = 'http://localhost:##PORT##';
 const BLOBS_URL = `${BACKEND_URL}/api/blobs`;
 const TAGS_URL = `${BACKEND_URL}/api/tags`;
 const TARGETS_URL = `${BACKEND_URL}/api/targets`;

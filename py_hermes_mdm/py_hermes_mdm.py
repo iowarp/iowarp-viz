@@ -1,5 +1,5 @@
 
-from py_hermes import Hermes, TRANSPARENT_HERMES
+from py_hermes import Hermes, TRANSPARENT_HERMES, IoType
 
 class MetadataSnapshot:
     """
@@ -15,6 +15,8 @@ class MetadataSnapshot:
         self.blob_info = []
         self.target_info = []
         self.tag_info = []
+        self.io_stats = []
+        self.last_access = 0
 
     def collect_target_md(self, filter, max_count):
         targets = self.hermes.PollTargetMetadata(filter, max_count)
@@ -76,7 +78,29 @@ class MetadataSnapshot:
                 tag_info['blobs'] = self.tag_to_blob[tag_info['id']]
             self.tag_info.append(tag_info)
 
+    def collect_access_pattern(self):
+        io_stats = self.hermes.PollAccessPattern(self.last_access)
+        for io_stat in io_stats: 
+            self.io_stats.append({
+                'type': self.get_io_type(io_stat.type),
+                'blob_id': self.unique(io_stat.blob_id),
+                'tag_id': self.unique(io_stat.tag_id),
+                'blob_size': io_stat.blob_size,
+                'id': int(io_stat.id),
+                'blob_size': int(io_stat.blob_size),
+            })
+        self.last_access = io_stats[-1].id
+
     @staticmethod
     def unique(id):
         return f'{id.node_id}.{id.unique}'
+
+    @staticmethod
+    def get_io_type(io_type):
+        if io_type == IoType.kRead:
+            return 'read'
+        elif io_type == IoType.kWrite:
+            return 'write'
+        else:
+            return 'none'
         

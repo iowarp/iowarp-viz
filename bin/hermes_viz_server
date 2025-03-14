@@ -9,9 +9,7 @@ import time
 import sys
 import os
 
-mdm = MetadataSnapshot()
-
-def periodic_collect(refresh):
+def periodic_collect(mdm, refresh):
     while True:
         mdm.collect_target_md("", 100)
         mdm.collect_blob_md("", 100)
@@ -49,9 +47,9 @@ def get_js():
         return f.read().replace('##PORT##', str(port))
 
 if __name__ == '__main__':
-    os.chdir(os.path.join(os.environ['HOME'], '.hermes_viz'))
+    mdm = MetadataSnapshot()
     port = int(sys.argv[1])
     refresh = int(sys.argv[2])
-    collect_thread = threading.Thread(target=lambda: periodic_collect(refresh), daemon=True)
+    collect_thread = threading.Thread(target=lambda: periodic_collect(mdm, refresh), daemon=True)
     collect_thread.start()
     app.run(debug=True, port=port)

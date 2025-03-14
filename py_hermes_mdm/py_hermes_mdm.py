@@ -16,6 +16,7 @@ class MetadataSnapshot:
         self.target_info = []
         self.tag_info = []
         self.io_stats = []
+        self.tid_to_tgt = {}
         self.last_access = 0
 
     def collect_target_md(self, filter, max_count):

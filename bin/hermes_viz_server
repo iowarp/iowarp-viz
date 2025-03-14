@@ -14,6 +14,7 @@ def periodic_collect(mdm, refresh):
         mdm.collect_target_md("", 100)
         mdm.collect_blob_md("", 100)
         mdm.collect_tag_md("", 100)
+        mdm.collect_access_pattern()
         time.sleep(refresh)
 
 app = Flask(__name__)
@@ -33,6 +34,10 @@ def get_targets():
 @app.route('/api/blobs', methods=['GET'])
 def get_blobs():
     return jsonify(mdm.blob_info)
+
+@app.route('/api/access_pattern', methods=['GET'])
+def get_access_pattern():
+    return jsonify({'count': len(mdm.io_stats)})
 
 @app.route('/', methods=['GET'])
 def get_html():

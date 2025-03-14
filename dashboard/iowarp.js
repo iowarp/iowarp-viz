@@ -2,10 +2,11 @@ const BACKEND_URL = 'http://localhost:##PORT##';
 const BLOBS_URL = `${BACKEND_URL}/api/blobs`;
 const TAGS_URL = `${BACKEND_URL}/api/tags`;
 const TARGETS_URL = `${BACKEND_URL}/api/targets`;
+const ACCESS_PATTERN_URL = `${BACKEND_URL}/api/access_pattern`;
 
-async function pollTargets() {
+async function pollJsonApi(URL) {
   try {
-    const response = await fetch(TARGETS_URL);
+    const response = await fetch(URL);
     const targets = await response.json();
     return targets;
   } catch (error) {
@@ -13,26 +14,31 @@ async function pollTargets() {
     return [];
   }
 }
-
-setInterval(pollTargets, 5000);  // Poll every 5 seconds
+setInterval(pollJsonApi(TARGETS_URL), 5000);         // Poll every 5 seconds
+setInterval(pollJsonApi(ACCESS_PATTERN_URL), 5000);  // Poll every 5 seconds
 
 async function updateTargetDisplay() {
-  const targets = await pollTargets();
+  const targets = await pollJsonApi(TARGETS_URL);
+  const pattern = await pollJsonApi(ACCESS_PATTERN_URL);
   const container =
       document.getElementById('targets-container') || createContainer();
+  console.log(pattern);
 
   container.innerHTML = '';
   targets.forEach(target => {
     const box = document.createElement('div');
     box.className = 'target-box';
 
-    const usagePercent = ((target.rem_cap / target.max_cap) * 100).toFixed(1);
+    const usage = target.max_cap - target.rem_cap;
+    const usagePercent = ((usage / target.max_cap) * 100).toFixed(1);
 
     box.innerHTML = `
             <h3>${target.name}</h3>
-            <p>Free Space: ${formatBytes(target.max_cap - target.rem_cap)}</p>
+            <p>Free Space: ${formatBytes(target.rem_cap)}</p>
+            <p>Used Space: ${formatBytes(usage)}</p>
             <p>Capacity: ${formatBytes(target.max_cap)}</p>
             <p>Usage: ${usagePercent}%</p>
+            <p>Net I/O reqs: ${pattern.count}</p>
         `;
 
     container.appendChild(box);

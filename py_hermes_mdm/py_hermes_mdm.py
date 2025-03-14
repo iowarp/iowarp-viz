@@ -80,6 +80,7 @@ class MetadataSnapshot:
             self.tag_info.append(tag_info)
 
     def collect_access_pattern(self):
+        self.io_stats = []
         io_stats = self.hermes.PollAccessPattern(self.last_access)
         for io_stat in io_stats: 
             self.io_stats.append({
@@ -90,7 +91,8 @@ class MetadataSnapshot:
                 'id': int(io_stat.id),
                 'blob_size': int(io_stat.blob_size),
             })
-        self.last_access = io_stats[-1].id
+        if len(io_stats) > 0:
+            self.last_access = io_stats[-1].id
 
     @staticmethod
     def unique(id):

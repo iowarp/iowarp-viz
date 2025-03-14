@@ -17,6 +17,7 @@ class MetadataSnapshot:
         self.tag_info = []
         self.io_stats = []
         self.tid_to_tgt = {}
+        self.tag_to_blob = {}
         self.last_access = 0
 
     def collect_target_md(self, filter, max_count):
@@ -56,9 +57,9 @@ class MetadataSnapshot:
                 buf_info = {
                     'target_id': self.unique(buf.tid),
                     'node_id': 0,
-                    'size': int(buf.t_size)
+                    'size': int(buf.size)
                 }
-                buf_info['node_id'] = tid_to_tgt[buf_info['target_id']]['node_id']
+                buf_info['node_id'] = self.tid_to_tgt[buf_info['target_id']]['node_id']
                 blob_info['buffer_info'].append(buf_info)
             self.blob_info.append(blob_info)
             if blob_info['tag_id'] not in self.tag_to_blob:
@@ -92,7 +93,7 @@ class MetadataSnapshot:
                 'blob_size': int(io_stat.blob_size),
             })
         if len(io_stats) > 0:
-            self.last_access = io_stats[-1].id
+            self.last_access = int(io_stats[-1].id)
 
     @staticmethod
     def unique(id):

@@ -31,6 +31,8 @@ async function updateTargetDisplay() {
 
     const usage = target.max_cap - target.rem_cap;
     const usagePercent = ((usage / target.max_cap) * 100).toFixed(1);
+    const bandwidth = (target.bandwidth * 1000).toFixed(1);
+    const latency = (target.latency / 1000).toFixed(1);
 
     box.innerHTML = `
             <h3>${target.name}</h3>
@@ -38,6 +40,8 @@ async function updateTargetDisplay() {
             <p>Used Space: ${formatBytes(usage)}</p>
             <p>Capacity: ${formatBytes(target.max_cap)}</p>
             <p>Usage: ${usagePercent}%</p>
+            <p>Bandwidth: ${bandwidth} MBps</p>
+            <p>Latency: ${latency} us</p>
             <p>Net I/O reqs: ${pattern.count}</p>
         `;
 

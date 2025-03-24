@@ -20,8 +20,17 @@ class MetadataSnapshot:
         self.tag_to_blob = {}
         self.last_access = 0
 
-    def collect_target_md(self, filter, max_count):
-        targets = self.hermes.PollTargetMetadata(filter, max_count)
+        self.target_filter = ""
+        self.max_targets = 100
+        self.tag_filter = ""
+        self.max_tags = 0
+        self.blob_filter = ""
+        self.max_blobs = 0
+        self.node_filter = ""
+        self.max_nodes = 0
+
+    def collect_target_md(self):
+        targets = self.hermes.PollTargetMetadata(self.target_filter, self.max_targets)
         self.target_info = []
         for target in targets:
             target_info = {
@@ -40,12 +49,12 @@ class MetadataSnapshot:
         for i, target in enumerate(self.target_info):
             target['name'] = f'Tier {i}'
     
-    def collect_blob_md(self, filter, max_count):
-        blobs = self.hermes.PollBlobMetadata(filter, max_count)
+    def collect_blob_md(self):
+        blobs = self.hermes.PollBlobMetadata(self.blob_filter, self.max_blobs)
         self.blob_info = []
         for blob in blobs:
             blob_info = {
-                'name': str(blob.get_name()),
+                # 'name': str(blob.get_name()),
                 'id': self.unique(blob.blob_id),
                 'mdm_node': int(blob.blob_id.node_id),
                 'tag_id': self.unique(blob.tag_id),
@@ -66,13 +75,13 @@ class MetadataSnapshot:
                 self.tag_to_blob[blob_info['tag_id']] = []
             self.tag_to_blob[blob_info['tag_id']].append(blob_info['id'])
 
-    def collect_tag_md(self, filter, max_count):
-        tags = self.hermes.PollTagMetadata(filter, max_count)
+    def collect_tag_md(self):
+        tags = self.hermes.PollTagMetadata(self.tag_filter, self.max_tags)
         for tag in tags:
             tag_info = {
                 'id': self.unique(tag.tag_id),
                 'mdm_node': int(tag.tag_id.node_id),
-                'name': str(tag.get_name()),
+                # 'name': str(tag.get_name()),
                 # 'blobs': [self.unique(blob.blob_id) for blob in tag.blobs]
                 'blobs': []
             }

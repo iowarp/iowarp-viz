@@ -3,6 +3,7 @@ const BLOBS_URL = `${BACKEND_URL}/api/blobs`;
 const TAGS_URL = `${BACKEND_URL}/api/tags`;
 const TARGETS_URL = `${BACKEND_URL}/api/targets`;
 const ACCESS_PATTERN_URL = `${BACKEND_URL}/api/access_pattern`;
+const SET_FILTER_URL = `${BACKEND_URL}/api/filters`;
 
 async function pollJsonApi(URL) {
   try {
@@ -14,38 +15,60 @@ async function pollJsonApi(URL) {
     return [];
   }
 }
-setInterval(pollJsonApi(TARGETS_URL), 5000);         // Poll every 5 seconds
-setInterval(pollJsonApi(ACCESS_PATTERN_URL), 5000);  // Poll every 5 seconds
+setInterval(pollJsonApi(TARGETS_URL), 5000);  // Poll every 5 seconds
 
 async function updateTargetDisplay() {
   const targets = await pollJsonApi(TARGETS_URL);
-  const pattern = await pollJsonApi(ACCESS_PATTERN_URL);
   const container =
       document.getElementById('targets-container') || createContainer();
-  console.log(pattern);
+
+  console.log('Targets:', targets);
+  const targetsMap = new Map();
+  targets.forEach(target => {
+    if (!targetsMap.has(target.node_id)) {
+      targetsMap.set(target.node_id, []);
+    }
+    targetsMap.get(target.node_id).push(target);
+    console.log(target.name);
+  });
 
   container.innerHTML = '';
-  targets.forEach(target => {
-    const box = document.createElement('div');
-    box.className = 'target-box';
+  const nodeContainer = document.createElement('div');
+  nodeContainer.style.display = 'flex';
+  nodeContainer.style.flexWrap = 'wrap';
+  nodeContainer.style.gap = '20px';
+  container.appendChild(nodeContainer);
 
-    const usage = target.max_cap - target.rem_cap;
-    const usagePercent = ((usage / target.max_cap) * 100).toFixed(1);
-    const bandwidth = (target.bandwidth * 1000).toFixed(1);
-    const latency = (target.latency / 1000).toFixed(1);
+  targetsMap.forEach((nodeTargets, nodeId) => {
+    const nodeDiv = document.createElement('div');
+    nodeDiv.className = 'node-container';
+    nodeDiv.style.flex = '0 1 auto';
+    nodeDiv.innerHTML = `<h2>Node ${nodeId}</h2>`;
 
-    box.innerHTML = `
-            <h3>${target.name}</h3>
-            <p>Free Space: ${formatBytes(target.rem_cap)}</p>
-            <p>Used Space: ${formatBytes(usage)}</p>
-            <p>Capacity: ${formatBytes(target.max_cap)}</p>
-            <p>Usage: ${usagePercent}%</p>
-            <p>Bandwidth: ${bandwidth} MBps</p>
-            <p>Latency: ${latency} us</p>
-            <p>Net I/O reqs: ${pattern.count}</p>
-        `;
+    nodeTargets.forEach(target => {
+      console.log(target.name);
+      const box = document.createElement('div');
+      box.className = 'target-box';
 
-    container.appendChild(box);
+      const usage = target.max_cap - target.rem_cap;
+      const usagePercent = ((usage / target.max_cap) * 100).toFixed(1);
+      const bandwidth = (target.bandwidth * 1000).toFixed(1);
+      const latency = (target.latency / 1000).toFixed(1);
+
+      box.innerHTML = `
+        <h3>${target.name}</h3>
+        <p>Free Space: ${formatBytes(target.rem_cap)}</p>
+        <p>Used Space: ${formatBytes(usage)}</p>
+        <p>Capacity: ${formatBytes(target.max_cap)}</p>
+        <p>Usage: ${usagePercent}%</p>
+        <p>Bandwidth: ${bandwidth} MBps</p>
+        <p>Latency: ${latency} us</p>
+      `;
+
+      nodeDiv.appendChild(box);
+    });
+
+    nodeContainer.appendChild(nodeDiv);
   });
 }
 
@@ -69,3 +92,22 @@ function formatBytes(bytes) {
 
 setInterval(updateTargetDisplay, 5000);
 updateTargetDisplay();
+
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Enter') {
+    const filters = {
+      tags_filter: document.getElementById('tags-filter').value,
+      max_tags: document.getElementById('max-tags').value,
+      blobs_filter: document.getElementById('blobs-filter').value,
+      max_blobs: document.getElementById('max-blobs').value,
+      nodes_filter: document.getElementById('nodes-filter').value,
+      max_nodes: document.getElementById('max-nodes').value
+    };
+
+    fetch(SET_FILTER_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(filters)
+    }).catch(error => console.error('Error setting filters:', error));
+  }
+});

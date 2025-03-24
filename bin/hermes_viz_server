@@ -11,9 +11,9 @@ import os
 
 def periodic_collect(mdm, refresh):
     while True:
-        mdm.collect_target_md("", 100)
-        mdm.collect_blob_md("", 100)
-        mdm.collect_tag_md("", 100)
+        mdm.collect_target_md()
+        mdm.collect_blob_md()
+        mdm.collect_tag_md()
         mdm.collect_access_pattern()
         time.sleep(refresh)
 
@@ -51,10 +51,21 @@ def get_js():
     with open(js_path, 'r') as f:
         return f.read().replace('##PORT##', str(port))
 
+@app.route('/api/filters', methods=['POST'])
+def set_filters():
+    filters = request.get_json()
+    blob_filter = filters.get('blobs', [])
+    tag_filter = filters.get('tags', [])
+    target_filter = filters.get('nodes', [])
+    # mdm.set_blob_filter(filters.get('blobs', []))
+    # mdm.set_tag_filter(filters.get('tags', []))
+    # mdm.set_target_filter(filters.get('nodes', []))
+    return jsonify({'status': 'ok'})
+
 if __name__ == '__main__':
     mdm = MetadataSnapshot()
     port = int(sys.argv[1])
-    refresh = int(sys.argv[2])
+    refresh = float(sys.argv[2])
     collect_thread = threading.Thread(target=lambda: periodic_collect(mdm, refresh), daemon=True)
     collect_thread.start()
     app.run(debug=True, port=port)

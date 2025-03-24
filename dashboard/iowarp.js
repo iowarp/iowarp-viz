@@ -23,7 +23,8 @@ async function updateTargetDisplay() {
   const container =
       document.getElementById('targets-container') || createContainer();
 
-  console.log('Targets:', targets);
+  // console.log('REFRESH_MS:', REFRESH_MS);
+  // console.log('Targets:', targets);
   const targetsMap = new Map();
   targets.forEach(target => {
     if (!targetsMap.has(target.node_id)) {

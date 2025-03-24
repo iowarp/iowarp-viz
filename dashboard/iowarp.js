@@ -4,6 +4,7 @@ const TAGS_URL = `${BACKEND_URL}/api/tags`;
 const TARGETS_URL = `${BACKEND_URL}/api/targets`;
 const ACCESS_PATTERN_URL = `${BACKEND_URL}/api/access_pattern`;
 const SET_FILTER_URL = `${BACKEND_URL}/api/filters`;
+const REFRESH_MS = ##REFRESH_MS##;
 
 async function pollJsonApi(URL) {
   try {
@@ -15,7 +16,7 @@ async function pollJsonApi(URL) {
     return [];
   }
 }
-setInterval(pollJsonApi(TARGETS_URL), 5000);  // Poll every 5 seconds
+setInterval(pollJsonApi(TARGETS_URL), REFRESH_MS);
 
 async function updateTargetDisplay() {
   const targets = await pollJsonApi(TARGETS_URL);

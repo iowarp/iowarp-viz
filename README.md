@@ -1,6 +1,5 @@
 # IoWarp Viz
 
-[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![IoWarp](https://img.shields.io/badge/IoWarp-GitHub-blue.svg)](http://github.com/iowarp)
 [![GRC](https://img.shields.io/badge/GRC-Website-blue.svg)](https://grc.iit.edu/)
 [![Python](https://img.shields.io/badge/Python-3.7+-yellow.svg)](https://www.python.org/)
@@ -29,20 +28,7 @@ Tutorial documentation is coming soon. For now, please refer to the installation
 
 ## Installation
 
-### Spack Installation
-
-```bash
-# Add IOWarp spack repository (if not already added)
-spack repo add https://github.com/iowarp/spack-packages
-
-# Install iowarp-viz
-spack install iowarp-viz
-spack load iowarp-viz
-```
-
-### Manual Installation
-
-#### Prerequisites
+### Prerequisites
 
 First, ensure you have the required Python dependencies:
 
@@ -95,10 +81,6 @@ pytest test/unit/
 - `dashboard/` - Web dashboard HTML/JS files
 - `py_hermes_mdm/` - Python metadata manager interface
 - `test/unit/` - Unit tests
-
-## License
-
-BSD 3-Clause License (consistent with IOWarp ecosystem)
 
 ## Support
 

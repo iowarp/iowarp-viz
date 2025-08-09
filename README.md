@@ -1,5 +1,6 @@
 # IoWarp Viz
 
+[![License: BSD-3-Clause](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![IoWarp](https://img.shields.io/badge/IoWarp-GitHub-blue.svg)](http://github.com/iowarp)
 [![GRC](https://img.shields.io/badge/GRC-Website-blue.svg)](https://grc.iit.edu/)
 [![Python](https://img.shields.io/badge/Python-3.7+-yellow.svg)](https://www.python.org/)
@@ -81,6 +82,12 @@ pytest test/unit/
 - `dashboard/` - Web dashboard HTML/JS files
 - `py_hermes_mdm/` - Python metadata manager interface
 - `test/unit/` - Unit tests
+
+## License
+
+BSD 3-Clause License
+
+Copyright (c) 2024, Gnosis Research Center, Illinois Institute of Technology. See the [LICENSE](LICENSE) file for details.
 
 ## Support
 
